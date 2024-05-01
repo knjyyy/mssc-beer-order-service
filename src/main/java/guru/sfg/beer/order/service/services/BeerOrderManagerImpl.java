@@ -16,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class BeerOrderManagerImpl implements BeerOrderManager {
+    public static final String HEADER_BEER_ORDER_ID = "ORDER_ID_HEADER";
     private final StateMachineFactory<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachineFactory;
     private final BeerOrderRepository beerOrderRepository;
+    private final BeerOrderStateChangeInterceptor beerOrderStateChangeInterceptor;
 
     @Transactional
     @Override
@@ -32,7 +34,9 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     private void sendBeerOrderEvent(BeerOrder beerOrder, BeerOrderEventEnum beerOrderEventEnum){
         StateMachine<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachine = build(beerOrder);
-        Message message = MessageBuilder.withPayload(beerOrderEventEnum).build();
+        Message message = MessageBuilder.withPayload(beerOrderEventEnum)
+                .setHeader(HEADER_BEER_ORDER_ID, beerOrder.getId())
+                .build();
         stateMachine.sendEvent(message);
     }
 
@@ -43,6 +47,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         stateMachine.stop();
         stateMachine.getStateMachineAccessor()
             .doWithAllRegions(sma -> {
+                sma.addStateMachineInterceptor(beerOrderStateChangeInterceptor);
                 sma.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(),
                         null, null, null));
             });
