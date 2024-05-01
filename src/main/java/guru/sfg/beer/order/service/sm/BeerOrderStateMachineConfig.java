@@ -15,12 +15,12 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
     @Override
     public void configure(StateMachineStateConfigurer<BeerOrderStatusEnum, BeerOrderEventEnum> states) throws Exception {
         states.withStates()
-                .initial(BeerOrderStatusEnum.NEW)
-                .states(EnumSet.allOf(BeerOrderStatusEnum.class))
-                .end(BeerOrderStatusEnum.DELIVERED)
-                .end(BeerOrderStatusEnum.PICKED_UP)
-                .end(BeerOrderStatusEnum.DELIVERY_EXCEPTION)
-                .end(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
-                .end(BeerOrderStatusEnum.ALLOCATION_EXCEPTION);
+            .initial(BeerOrderStatusEnum.NEW)
+            .states(EnumSet.allOf(BeerOrderStatusEnum.class))
+            .end(BeerOrderStatusEnum.DELIVERED)
+            .end(BeerOrderStatusEnum.PICKED_UP)
+            .end(BeerOrderStatusEnum.DELIVERY_EXCEPTION)
+            .end(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
+            .end(BeerOrderStatusEnum.ALLOCATION_EXCEPTION);
     }
 }
